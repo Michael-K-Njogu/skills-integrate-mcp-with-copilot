@@ -149,6 +149,18 @@ section h3 {
   font-size: 16px;
 }
 
+.auth-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#auth-status {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
 button {
   background-color: #1a237e;
   color: white;
