@@ -5,11 +5,12 @@ A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 import os
 from pathlib import Path
+from uuid import uuid4
 
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
@@ -77,6 +78,18 @@ activities = {
     }
 }
 
+# In-memory auth store
+users = {}
+sessions = {}
+
+
+def get_authenticated_user(request: Request) -> str:
+    """Returns the authenticated user email from a valid session cookie."""
+    session_token = request.cookies.get("session_token")
+    if not session_token or session_token not in sessions:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return sessions[session_token]
+
 
 @app.get("/")
 def root():
@@ -88,9 +101,55 @@ def get_activities():
     return activities
 
 
+@app.post("/auth/signup")
+def signup(email: str, password: str):
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password are required")
+
+    if email in users:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    users[email] = {"password": password}
+    return {"message": "Account created successfully"}
+
+
+@app.post("/auth/login")
+def login(email: str, password: str, response: Response):
+    if email not in users or users[email]["password"] != password:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    session_token = str(uuid4())
+    sessions[session_token] = email
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        samesite="lax"
+    )
+    return {"message": "Logged in successfully", "email": email}
+
+
+@app.post("/auth/logout")
+def logout(request: Request, response: Response):
+    session_token = request.cookies.get("session_token")
+    if session_token and session_token in sessions:
+        sessions.pop(session_token)
+
+    response.delete_cookie("session_token")
+    return {"message": "Logged out successfully"}
+
+
+@app.get("/auth/me")
+def me(request: Request):
+    email = get_authenticated_user(request)
+    return {"email": email}
+
+
 @app.post("/activities/{activity_name}/signup")
-def signup_for_activity(activity_name: str, email: str):
+def signup_for_activity(activity_name: str, email: str, request: Request):
     """Sign up a student for an activity"""
+    get_authenticated_user(request)
+
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -111,8 +170,10 @@ def signup_for_activity(activity_name: str, email: str):
 
 
 @app.delete("/activities/{activity_name}/unregister")
-def unregister_from_activity(activity_name: str, email: str):
+def unregister_from_activity(activity_name: str, email: str, request: Request):
     """Unregister a student from an activity"""
+    get_authenticated_user(request)
+
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
