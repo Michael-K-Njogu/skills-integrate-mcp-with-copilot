@@ -9,6 +9,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupBtn = document.getElementById("signup-btn");
   const loginBtn = document.getElementById("login-btn");
   const logoutBtn = document.getElementById("logout-btn");
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+
+  // Initialize dark mode from localStorage
+  if (darkModeToggle) {
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.body.classList.add("dark-mode");
+      darkModeToggle.textContent = "☀️";
+    }
+
+    darkModeToggle.addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("dark-mode");
+      darkModeToggle.textContent = isDark ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+    });
+  }
 
   function showMessage(text, type) {
     messageDiv.textContent = text;

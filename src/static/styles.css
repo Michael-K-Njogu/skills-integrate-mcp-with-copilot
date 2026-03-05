@@ -80,6 +80,29 @@ header {
   border-radius: 8px;
   border: 2px solid var(--school-lime);
   box-shadow: var(--panel-shadow);
+  position: relative;
+}
+
+.dark-mode-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: 2px solid var(--school-lime);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--school-lime-soft);
 }
 
 header h1 {
@@ -353,4 +376,92 @@ footer {
     max-width: 110px;
     max-height: 110px;
   }
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+body.dark-mode {
+  --paper: #1e2a14;
+  --school-lime-soft: #1a2710;
+  --school-ink: #d8f0b0;
+  --panel-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+
+  background:
+    radial-gradient(circle at 10% 10%, rgba(139, 220, 0, 0.1), transparent 40%),
+    radial-gradient(circle at 90% 0%, rgba(139, 220, 0, 0.07), transparent 38%),
+    linear-gradient(180deg, #141d0c 0%, #0e1609 100%);
+  color: var(--school-ink);
+}
+
+body.dark-mode::before {
+  background-image:
+    repeating-linear-gradient(25deg, transparent 0 30px, rgba(139, 220, 0, 0.07) 31px 33px),
+    repeating-linear-gradient(-12deg, transparent 0 48px, rgba(94, 152, 0, 0.05) 49px 51px);
+}
+
+body.dark-mode section {
+  background-color: var(--paper);
+  border-color: #2e4a1a;
+}
+
+body.dark-mode section h3 {
+  border-bottom-color: #2e4a1a;
+}
+
+body.dark-mode .activity-card {
+  background-color: #172210;
+  border-color: #2e4a1a;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select {
+  background-color: #172210;
+  border-color: #3a5c1e;
+  color: var(--school-ink);
+}
+
+body.dark-mode .participants-container {
+  border-top-color: #2e4a1a;
+}
+
+body.dark-mode .participants-section p {
+  color: #8aaa60;
+}
+
+body.dark-mode .success {
+  background-color: #172e0a;
+  color: #8bdc00;
+  border-color: #3a5c1e;
+}
+
+body.dark-mode .error {
+  background-color: #2d0a0a;
+  color: #ff8a80;
+  border-color: #7f1a1a;
+}
+
+body.dark-mode .info {
+  background-color: #172210;
+  color: #aad47a;
+  border-color: #2e4a1a;
+}
+
+body.dark-mode .mascot-card {
+  background: linear-gradient(180deg, #1e2a14 0%, #172210 100%);
+  border-color: #2e4a1a;
+}
+
+body.dark-mode .mascot-card h4 {
+  color: var(--school-lime);
+}
+
+body.dark-mode .mascot-intro a {
+  color: var(--school-lime);
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+  background-color: #2e4a1a;
+}
+
+body.dark-mode footer {
+  color: #8aaa60;
 }
